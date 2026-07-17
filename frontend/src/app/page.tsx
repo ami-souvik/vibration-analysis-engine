@@ -37,7 +37,7 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="flex-1 overflow-hidden relative border border-border border-t-0 rounded-b-lg">
+      <div className="flex-1 flex flex-col overflow-hidden relative border border-border border-t-0 rounded-b-lg">
         {activeTab === "diagnosis" && <ChatTab />}
         {activeTab === "spectrum" && <SpectrumTab />}
         {activeTab === "report" && <ReportTab />}

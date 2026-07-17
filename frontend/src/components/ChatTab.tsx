@@ -99,14 +99,14 @@ export default function ChatTab() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-bg-base">
+    <div className="flex-1 flex flex-col h-full bg-bg-base">
       <div className="flex-1 overflow-y-auto space-y-6 pb-6">
         <div className="border border-green bg-green/5 rounded-md px-3 py-2 flex items-center gap-[10px] mx-3 mt-3">
           <span className="size-1.5 rounded-full bg-green"></span>
           <span className="text-green font-mono text-[0.8em] tracking-wider">
             {
               messages.length > 0 ? "Response received."
-                : "Diagnostic engine connected. Describe the pump vibration to begin."
+                : "Diagnostic engine connected. Describe the vibration in screw compressor to begin."
             }
           </span>
         </div>
@@ -156,7 +156,7 @@ export default function ChatTab() {
                   handleSend();
                 }
               }}
-              placeholder="Type your query here — e.g. OH2 pump 75 KW, 2900 RPM, 7 vanes, bearings 7309 DE + NU 309 NDE. 6.4 mm/sec RMS, peaks at 228 Hz"
+              placeholder="Type your query here — e.g. Vibration analysis of screw compressor with anti friction bearings..."
               className="flex-1 bg-transparent rounded-md border border-border-soft pl-4 focus:outline-none text-text placeholder:text-text-dim resize-none text-[0.9em] leading-relaxed"
               rows={4}
             />

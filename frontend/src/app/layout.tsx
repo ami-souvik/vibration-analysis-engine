@@ -30,7 +30,7 @@ export default function RootLayout({
                   VDX<span className="text-accent"> &middot; </span>VIBRATION DIAGNOSTIC ENGINE
                 </h1>
                 <p className="text-text-mute text-[0.78em] tracking-[0.08em] uppercase mt-[2px] m-0">
-                  ISO 10816-7 &middot; Horizontal Centrifugal Pump Analysis
+                  ISO 10816-7 &middot; Vibration analysis of screw compressor with anti friction bearings
                 </p>
               </div>
             </div>
