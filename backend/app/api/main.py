@@ -74,6 +74,9 @@ class TextDiagnoseRequest(BaseModel):
 def diagnose_from_text(req: TextDiagnoseRequest):
     params = parse_operator_input(req.text, req.expected_type)
     
+    if params.conversational_reply:
+        return {"status": "conversation", "reply": params.conversational_reply}
+    
     if not params.machine_type and "machine_type" not in params.missing_fields:
         params.missing_fields.append("machine_type")
         

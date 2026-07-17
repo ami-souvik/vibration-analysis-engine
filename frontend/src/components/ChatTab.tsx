@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Terminal } from "lucide-react";
 
 interface Message {
   id: string;
@@ -9,13 +8,7 @@ interface Message {
 }
 
 export default function ChatTab() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      sender: "system",
-      text: "Diagnostic engine connected. Describe the machine state and vibration readings to begin.",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -52,15 +45,22 @@ export default function ChatTab() {
 
       const data = await response.json();
 
-      if (data.status === "missing_fields") {
+      if (data.status === "conversation") {
         setMessages((prev) => [
           ...prev,
           {
             id: Date.now().toString(),
             sender: "engine",
-            text: `Missing required fields to perform calculation: ${data.missing.join(
-              ", "
-            )}. Please provide them.`,
+            text: data.reply,
+          },
+        ]);
+      } else if (data.status === "missing_fields") {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            sender: "engine",
+            text: `Missing required fields to perform calculation: ${data.missing.join(", ")}. Please provide them.`,
             data: data.params,
           },
         ]);
@@ -99,67 +99,75 @@ export default function ChatTab() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+    <div className="flex flex-col h-full bg-bg-base">
+      <div className="flex-1 overflow-y-auto space-y-6 pb-6">
+        <div className="border border-green bg-green/5 rounded-md px-3 py-2 flex items-center gap-[10px] mx-3 mt-3">
+          <span className="size-1.5 rounded-full bg-green"></span>
+          <span className="text-green font-mono text-[0.8em] tracking-wider">
+            {
+              messages.length > 0 ? "Response received."
+                : "Diagnostic engine connected. Describe the pump vibration to begin."
+            }
+          </span>
+        </div>
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex flex-col ${
-              msg.sender === "user" ? "items-end" : "items-start"
-            }`}
-          >
-            <div className="flex items-center gap-2 mb-1 text-xs text-gray-500 uppercase tracking-widest">
-              {msg.sender === "system" && <Terminal size={12} />}
-              {msg.sender}
+          <div key={msg.id} className="flex gap-4 mx-6">
+            <div className={`size-[38px] border rounded flex items-center justify-center font-mono text-[0.65em] font-semibold tracking-wider shrink-0 mt-[2px] ${msg.sender === "user" ? "border-border-soft text-text-mute bg-bg-elev" : "border-accent text-accent bg-bg-deep"
+              }`}>
+              {msg.sender === "user" ? "OPR" : "VDX"}
             </div>
-            <div
-              className={`p-4 max-w-[80%] whitespace-pre-wrap rounded-sm border ${
-                msg.sender === "user"
-                  ? "bg-[#1a1a1a] border-border-color text-foreground"
-                  : msg.sender === "system"
-                  ? "bg-transparent border-dashed border-accent-gold/50 text-accent-gold"
-                  : "bg-[#0f1510] border-accent-green/30 text-accent-green"
-              }`}
-            >
-              {msg.text}
-              {msg.data && msg.sender === "engine" && (
-                <pre className="mt-4 p-3 bg-black/50 rounded text-xs overflow-x-auto border border-border-color/50 text-gray-300">
-                  {JSON.stringify(msg.data, null, 2)}
-                </pre>
-              )}
+            <div className="flex-1 flex flex-col">
+              <div className={`text-[0.65em] font-mono font-bold tracking-widest uppercase mb-1.5 ${msg.sender === "user" ? "text-text-mute" : "text-accent"
+                }`}>
+                {msg.sender === "user" ? "OPERATOR" : "DIAGNOSTIC ENGINE"}
+              </div>
+              <div className="text-text text-[0.95em] whitespace-pre-wrap leading-[1.6]">
+                {msg.text}
+                {msg.data && msg.sender === "engine" && (
+                  <pre className="mt-4 p-3 bg-bg-deep rounded text-xs overflow-x-auto border border-border text-text-dim">
+                    {JSON.stringify(msg.data, null, 2)}
+                  </pre>
+                )}
+              </div>
             </div>
           </div>
         ))}
         {isLoading && (
-          <div className="flex items-center gap-2 text-accent-gold text-sm animate-pulse">
-            <span className="h-2 w-2 bg-accent-gold rounded-full"></span>
+          <div className="flex items-center gap-[10px] text-accent text-xs font-mono uppercase tracking-widest mx-6 ml-[66px] animate-pulse">
+            <span className="h-1.5 w-1.5 bg-accent rounded-full shadow-[0_0_8px_var(--accent)]"></span>
             PROCESSING TELEMETRY...
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t border-border-color bg-background">
-        <label className="block text-xs text-gray-500 mb-2 uppercase tracking-widest font-semibold">
-          Operator Input — Describe Machine State
-        </label>
-        <div className="flex gap-4">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            placeholder="e.g. Screw Compressor, 1480 RPM, 4 male / 6 female lobes, Group 1 rigid. Peak at 24.6 Hz."
-            className="flex-1 bg-[#111] border border-border-color p-4 focus:outline-none focus:border-accent-gold transition-colors text-foreground placeholder:text-gray-600 rounded-sm"
-          />
-          <button
-            onClick={handleSend}
-            disabled={isLoading || !input.trim()}
-            className="bg-accent-gold hover:bg-yellow-400 text-black px-8 font-bold flex items-center gap-2 disabled:opacity-50 transition-colors uppercase tracking-wider rounded-sm"
-          >
-            <Send size={18} />
-            Transmit
-          </button>
+      <div className="p-3 shrink-0">
+        <div className="border border-accent rounded-lg flex flex-col px-3 py-2 bg-bg-elev">
+          <div className="flex items-center gap-2 text-accent font-mono text-[0.72em] uppercase font-bold tracking-widest mb-2">
+            <span className="opacity-60">&gt;</span> OPERATOR INPUT &mdash; DESCRIBE MACHINE STATE
+          </div>
+          <div className="flex gap-2 items-end">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              placeholder="Type your query here — e.g. OH2 pump 75 KW, 2900 RPM, 7 vanes, bearings 7309 DE + NU 309 NDE. 6.4 mm/sec RMS, peaks at 228 Hz"
+              className="flex-1 bg-transparent rounded-md border border-border-soft pl-4 focus:outline-none text-text placeholder:text-text-dim resize-none text-[0.9em] leading-relaxed"
+              rows={4}
+            />
+            <button
+              onClick={handleSend}
+              disabled={isLoading || !input.trim()}
+              className="bg-accent hover:bg-yellow-400 text-black p-4 font-bold flex items-center justify-center disabled:opacity-50 transition-colors uppercase tracking-widest rounded-md text-[0.8em]"
+            >
+              TRANSMIT
+            </button>
+          </div>
         </div>
       </div>
     </div>

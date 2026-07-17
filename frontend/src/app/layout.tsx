@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen p-[18px]">
+      <body className="flex flex-col min-h-screen p-[10px]">
         <div className="max-w-[1420px] w-full mx-auto flex flex-col flex-1">
           <header className="bg-gradient-to-b from-bg-elev to-bg-base border border-border rounded-lg py-[18px] px-6 mb-[14px] flex flex-col items-start justify-between gap-6 relative overflow-hidden shrink-0">
             {/* Header background glow effect */}

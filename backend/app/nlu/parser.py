@@ -21,6 +21,7 @@ class ExtractedMachineParams(BaseModel):
     overall_vibration_rms: Optional[float] = Field(default=None, description="Overall vibration in mm/s RMS")
     
     missing_fields: List[str] = Field(default_factory=list, description="List of fields that are required but missing from the input")
+    conversational_reply: Optional[str] = Field(default=None, description="Use this field to reply naturally if the user just says hello, or to ask for clarification on missing parameters.")
 
 def parse_operator_input(text: str, expected_type: Optional[str] = None) -> ExtractedMachineParams:
     """
@@ -37,8 +38,8 @@ def parse_operator_input(text: str, expected_type: Optional[str] = None) -> Extr
     client = genai.Client(api_key=api_key)
     
     prompt = f"""
-    You are an expert vibration analysis parsing assistant.
-    Extract the machine parameters from the following operator input.
+    You are VDX, an expert vibration analysis parsing assistant.
+    Analyze the operator input and extract the machine parameters into the structured schema.
     If a parameter is not explicitly mentioned, DO NOT GUESS it. Leave it null/None.
     
     Expected machine type hint (if any): {expected_type}
@@ -48,8 +49,11 @@ def parse_operator_input(text: str, expected_type: Optional[str] = None) -> Extr
     
     Required fields for Screw Compressor: motor_rpm, male_lobes, female_lobes, foundation_type, machine_group
     Required fields for Centrifugal Fan: fan_rpm (mapped to motor_rpm), vanes, foundation_type, machine_group
+    Required fields for Centrifugal Pump: Power rating in KW (can map to machine_group/foundation loosely or be ignored if unneeded by strict schema), motor_rpm, overall_vibration_rms, measured_peaks, and bearing type.
     
-    Determine if any required fields are missing based on the identified machine_type and add them to missing_fields.
+    If the user's input is just a greeting (e.g. "Hello"), or if they mention a machine (like a "centrifugal pump") but provide NO telemetry data, DO NOT just return missing fields. Instead, populate the `conversational_reply` field with a natural, helpful response asking them for the required information (like Power rating in KW, Speed in RPM, Vibration amplitude, peak frequencies, and bearing type).
+    
+    Otherwise, extract the data and determine if any required fields are missing based on the identified machine_type, adding them to missing_fields.
     """
     
     response = client.models.generate_content(
