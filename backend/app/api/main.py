@@ -76,38 +76,22 @@ def diagnose_from_text(req: TextDiagnoseRequest):
     
     if params.conversational_reply:
         return {"status": "conversation", "reply": params.conversational_reply}
-    
-    if not params.machine_type and "machine_type" not in params.missing_fields:
-        params.missing_fields.append("machine_type")
         
     if params.missing_fields:
         return {"status": "missing_fields", "missing": params.missing_fields, "params": params.model_dump()}
         
-    # Convert list of ExtractedPeak back to dictionary for the engines
     peaks_dict = {p.name: p.frequency_hz for p in params.measured_peaks} if params.measured_peaks else {}
-        
-    if params.machine_type == "Screw Compressor":
-        result = diagnose_screw_compressor(
-            motor_rpm=params.motor_rpm,
-            male_lobes=params.male_lobes,
-            female_lobes=params.female_lobes,
-            foundation_type=params.foundation_type,
-            machine_group=params.machine_group,
-            measured_peaks=peaks_dict,
-            overall_vibration_rms=params.overall_vibration_rms
-        )
-        narration = generate_diagnosis_narration(result, req.text)
-        return {"status": "success", "result": result.model_dump(), "narration": narration, "params": params.model_dump()}
-    elif params.machine_type == "Centrifugal Fan":
-        result = diagnose_centrifugal_fan(
-            fan_rpm=params.motor_rpm,
-            vanes=params.vanes,
-            foundation_type=params.foundation_type,
-            machine_group=params.machine_group,
-            measured_peaks=peaks_dict,
-            overall_vibration_rms=params.overall_vibration_rms
-        )
-        narration = generate_diagnosis_narration(result, req.text)
-        return {"status": "success", "result": result.model_dump(), "narration": narration, "params": params.model_dump()}
-    else:
-        raise HTTPException(status_code=400, detail=f"Unsupported or unknown machine type: {params.machine_type}")
+    
+    result = diagnose_screw_compressor(
+        motor_rpm=params.motor_rpm,
+        male_lobes=params.male_lobes,
+        female_lobes=params.female_lobes,
+        foundation_type=params.foundation_type,
+        machine_group=params.machine_group,
+        measured_peaks=peaks_dict,
+        overall_vibration_rms=params.overall_vibration_rms,
+        bearing_numbers=params.bearing_numbers
+    )
+    
+    narration = generate_diagnosis_narration(result, req.text)
+    return {"status": "success", "result": result.model_dump(), "narration": narration, "params": params.model_dump()}

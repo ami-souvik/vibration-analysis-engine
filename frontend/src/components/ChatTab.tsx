@@ -33,6 +33,12 @@ export default function ChatTab() {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
+    
+    // Accumulate all operator inputs to send to the parser
+    const allUserMessages = [...messages, userMessage]
+      .filter((m) => m.sender === "user")
+      .map((m) => m.text)
+      .join("\n---\n");
 
     try {
       const response = await fetch("/api/diagnose/text", {
@@ -40,7 +46,7 @@ export default function ChatTab() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text: userMessage.text }),
+        body: JSON.stringify({ text: allUserMessages }),
       });
 
       const data = await response.json();
@@ -55,13 +61,31 @@ export default function ChatTab() {
           },
         ]);
       } else if (data.status === "missing_fields") {
+        const fieldLabels: Record<string, string> = {
+          motor_rpm: "Speed in RPM",
+          male_lobes: "Number of male lobes",
+          female_lobes: "Number of female lobes",
+          foundation_type: "Foundation type (Rigid or Flexible)",
+          machine_group: "Machine group (e.g. Group 2 Oil-Free, Group 3 Oil-Flooded)",
+          bearing_numbers: "Bearing numbers (e.g. 7309 DE, NU 309 NDE)",
+          measured_peaks: "At least one peak frequency in Hz",
+          overall_vibration_rms: "Overall vibration (mm/sec RMS)"
+        };
+        
+        const bullets = data.missing.map((f: string) => `* ${fieldLabels[f] || f}`).join('\n');
+        
+        // Count user messages to determine if this is the first interaction
+        const userMessageCount = prev.filter(m => m.sender === "user").length;
+        const text = userMessageCount === 1 
+          ? `Hello! I'm ready to help diagnose your machine.\n\nTo start, please provide the following information:\n${bullets}`
+          : `Thank you. I still need the following to proceed:\n${bullets}`;
+        
         setMessages((prev) => [
           ...prev,
           {
             id: Date.now().toString(),
             sender: "engine",
-            text: `Missing required fields to perform calculation: ${data.missing.join(", ")}. Please provide them.`,
-            data: data.params,
+            text: text,
           },
         ]);
       } else if (data.status === "success") {
