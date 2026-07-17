@@ -4,6 +4,7 @@ interface Message {
   id: string;
   sender: "system" | "user" | "engine";
   text: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
 }
 
@@ -108,7 +109,7 @@ export default function ChatTab() {
           },
         ]);
       }
-    } catch (error: any) {
+    } catch (error) {
       setMessages((prev) => [
         ...prev,
         {
