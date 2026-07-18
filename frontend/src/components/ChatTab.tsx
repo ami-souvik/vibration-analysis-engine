@@ -76,7 +76,7 @@ export default function ChatTab() {
         const bullets = data.missing.map((f: string) => `* ${fieldLabels[f] || f}`).join('\n');
         
         // Count user messages to determine if this is the first interaction
-        const userMessageCount = prev.filter(m => m.sender === "user").length;
+        const userMessageCount = messages.filter(m => m.sender === "user").length;
         const text = userMessageCount === 1 
           ? `Hello! I'm ready to help diagnose your machine.\n\nTo start, please provide the following information:\n${bullets}`
           : `Thank you. I still need the following to proceed:\n${bullets}`;
@@ -115,7 +115,7 @@ export default function ChatTab() {
         {
           id: Date.now().toString(),
           sender: "system",
-          text: `Connection error: ${error.message}`,
+          text: `Connection error: ${error instanceof Error ? error.message : String(error)}`,
         },
       ]);
     } finally {
