@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-interface Message {
+export interface Message {
   id: string;
   sender: "system" | "user" | "engine";
   text: string;
@@ -8,8 +8,12 @@ interface Message {
   data?: any;
 }
 
-export default function ChatTab() {
-  const [messages, setMessages] = useState<Message[]>([]);
+interface ChatTabProps {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
+
+export default function ChatTab({ messages, setMessages }: ChatTabProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);

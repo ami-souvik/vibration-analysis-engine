@@ -1,42 +1,91 @@
-import { Download } from "lucide-react";
+"use client";
 
-export default function ReportTab() {
+import { Message } from "./ChatTab";
+
+interface ReportTabProps {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
+
+export default function ReportTab({ messages, setMessages }: ReportTabProps) {
+  
+  // Group messages into Q/A pairs
+  const exchanges: { question: Message; answer: Message | null; timestamp: string }[] = [];
+  
+  let currentQuestion: Message | null = null;
+  
+  // A naive pairing logic assuming conversation flows as User -> Engine
+  messages.forEach((msg) => {
+    if (msg.sender === "user") {
+      if (currentQuestion) {
+        // Unanswered previous question
+        const q = currentQuestion as Message;
+        exchanges.push({ question: q, answer: null, timestamp: new Date(parseInt(q.id)).toLocaleString() });
+      }
+      currentQuestion = msg;
+    } else if (msg.sender === "engine") {
+      if (currentQuestion) {
+        exchanges.push({ question: currentQuestion, answer: msg, timestamp: new Date(parseInt(msg.id)).toLocaleString() });
+        currentQuestion = null;
+      }
+    }
+  });
+  
+  if (currentQuestion) {
+    const q = currentQuestion as Message;
+    exchanges.push({ question: q, answer: null, timestamp: new Date(parseInt(q.id)).toLocaleString() });
+  }
+
+  // Format markdown-like syntax natively for bold text
+  const formatText = (text: string) => {
+    // This simple regex replaces **bold** with <strong>bold</strong>
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="text-white">{part.slice(2, -2)}</strong>;
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
+
   return (
-    <div className="p-8 h-full flex flex-col items-center overflow-y-auto">
-      <div className="border border-border-color bg-white text-black p-12 max-w-4xl w-full font-serif shadow-2xl relative">
-        <div className="absolute top-0 left-0 w-full h-2 bg-accent-gold"></div>
-        <div className="flex justify-between items-end border-b-2 border-black pb-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">VIBRATION DIAGNOSTIC REPORT</h1>
-            <p className="text-sm text-gray-600 mt-2 font-mono">SESSION ID: 0x9A2F | DATE: {new Date().toISOString().split('T')[0]}</p>
-          </div>
-          <div className="text-right">
-            <p className="font-bold">VDX Engine v1.0</p>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <section>
-            <h3 className="font-bold text-lg mb-2 uppercase border-b border-gray-300">1. Machine Parameters</h3>
-            <p className="text-gray-500 italic">No parameters loaded.</p>
-          </section>
-          
-          <section>
-            <h3 className="font-bold text-lg mb-2 uppercase border-b border-gray-300">2. Calculated Frequencies</h3>
-            <p className="text-gray-500 italic">No frequency table generated.</p>
-          </section>
-
-          <section>
-            <h3 className="font-bold text-lg mb-2 uppercase border-b border-gray-300">3. Diagnostic Verdict</h3>
-            <p className="text-gray-500 italic">Awaiting completion of diagnostic chat.</p>
-          </section>
+    <div className="flex-1 overflow-y-auto bg-background p-[18px] flex flex-col gap-8 text-sm">
+      <div className="flex flex-col">
+        <h3 className="text-text-dim font-mono tracking-widest uppercase mb-4 text-xs">{"// Session Diagnostic Report"}</h3>
+        <p className="text-text-mute text-sm mb-6">{exchanges.length} diagnostic exchanges captured</p>
+        
+        <div className="flex flex-col gap-6">
+          {exchanges.map((ex, index) => (
+            <div key={index} className="bg-[#11161d] border border-border p-6 rounded-md flex flex-col gap-4">
+              <h4 className="text-white font-bold">Q{index + 1}: {ex.question.text}</h4>
+              <div className="text-text-mute whitespace-pre-wrap leading-relaxed">
+                {ex.answer ? formatText(ex.answer.text) : <span className="italic text-gray-500">Awaiting response...</span>}
+              </div>
+              <div className="text-text-dim font-mono text-xs mt-2">
+                {ex.timestamp}
+              </div>
+            </div>
+          ))}
+          {exchanges.length === 0 && (
+            <div className="text-text-dim font-mono text-center p-12 border border-dashed border-border rounded-md">
+              No diagnostic exchanges recorded yet.
+            </div>
+          )}
         </div>
       </div>
-      
-      <div className="mt-8">
-        <button className="bg-accent-gold hover:bg-yellow-400 text-black px-6 py-3 font-bold flex items-center gap-2 transition-colors uppercase tracking-wider rounded-sm">
-          <Download size={18} />
-          Export PDF
+
+      <div className="flex gap-4 mt-4">
+        <button className="bg-accent text-background font-mono font-bold uppercase tracking-widest px-8 py-3 rounded hover:bg-accent/90 transition-colors">
+          Generate PDF
+        </button>
+        <button className="bg-bg-elev border border-border text-text font-mono uppercase tracking-widest px-8 py-3 rounded hover:bg-bg-deep transition-colors">
+          Export Session CSV
+        </button>
+        <button 
+          onClick={() => setMessages([])} 
+          className="bg-red-500 text-white font-mono font-bold uppercase tracking-widest px-8 py-3 rounded hover:bg-red-600 transition-colors ml-auto"
+        >
+          Clear Session
         </button>
       </div>
     </div>

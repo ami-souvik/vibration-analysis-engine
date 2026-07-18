@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import ChatTab from "@/components/ChatTab";
+import ChatTab, { Message } from "@/components/ChatTab";
 import SpectrumTab from "@/components/SpectrumTab";
 import ReportTab from "@/components/ReportTab";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"diagnosis" | "spectrum" | "report">("diagnosis");
+  const [messages, setMessages] = useState<Message[]>([]);
 
   return (
     <div className="flex flex-col h-full flex-1">
@@ -38,9 +39,9 @@ export default function Home() {
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden relative border border-border border-t-0 rounded-b-lg">
-        {activeTab === "diagnosis" && <ChatTab />}
+        {activeTab === "diagnosis" && <ChatTab messages={messages} setMessages={setMessages} />}
         {activeTab === "spectrum" && <SpectrumTab />}
-        {activeTab === "report" && <ReportTab />}
+        {activeTab === "report" && <ReportTab messages={messages} setMessages={setMessages} />}
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ from app.engine.screw_compressor import diagnose_screw_compressor
 from app.engine.centrifugal_fan import diagnose_centrifugal_fan
 from app.nlu.parser import parse_operator_input
 from app.nlu.narrator import generate_diagnosis_narration
+from app.engine.spectrum import BEARING_DB, calculate_spectrum_faults, FaultFrequencyResult
 
 app = FastAPI(title="VDX Diagnostic Engine API")
 
@@ -95,3 +96,30 @@ def diagnose_from_text(req: TextDiagnoseRequest):
     
     narration = generate_diagnosis_narration(result, req.text)
     return {"status": "success", "result": result.model_dump(), "narration": narration, "params": params.model_dump()}
+
+@app.get("/api/spectrum/bearing/{bearing_number}")
+def get_bearing_geometry(bearing_number: str):
+    # Try exact match or partial match
+    for key, geom in BEARING_DB.items():
+        if key.replace(" ", "") == bearing_number.replace(" ", ""):
+            return geom.model_dump()
+    raise HTTPException(status_code=404, detail="Bearing not found")
+
+class SpectrumCalculateRequest(BaseModel):
+    shaft_rpm: float
+    balls: int
+    ball_diameter: float
+    pitch_diameter: float
+    contact_angle: float
+    operator_peaks: Optional[List[float]] = None
+
+@app.post("/api/spectrum/calculate")
+def calculate_spectrum(req: SpectrumCalculateRequest):
+    faults = calculate_spectrum_faults(
+        shaft_rpm=req.shaft_rpm,
+        balls=req.balls,
+        ball_diameter=req.ball_diameter,
+        pitch_diameter=req.pitch_diameter,
+        contact_angle=req.contact_angle
+    )
+    return {"faults": [f.model_dump() for f in faults]}
