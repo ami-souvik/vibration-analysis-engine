@@ -38,7 +38,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
-    
+
     // Accumulate all operator inputs to send to the parser
     const allUserMessages = [...messages, userMessage]
       .filter((m) => m.sender === "user")
@@ -76,15 +76,15 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
           measured_peaks: "At least one peak frequency in Hz",
           overall_vibration_rms: "Overall vibration (mm/sec RMS)"
         };
-        
+
         const bullets = data.missing.map((f: string) => `* ${fieldLabels[f] || f}`).join('\n');
-        
+
         // Count user messages to determine if this is the first interaction
         const userMessageCount = messages.filter(m => m.sender === "user").length;
-        const text = userMessageCount === 1 
+        const text = userMessageCount === 1
           ? `Hello! I'm ready to help diagnose your machine.\n\nTo start, please provide the following information:\n${bullets}`
           : `Thank you. I still need the following to proceed:\n${bullets}`;
-        
+
         setMessages((prev) => [
           ...prev,
           {
@@ -132,7 +132,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
       <div className="flex-1 overflow-y-auto space-y-6 pb-6">
         <div className="border border-green bg-green/5 rounded-md px-3 py-2 flex items-center gap-[10px] mx-3 mt-3">
           <span className="size-1.5 rounded-full bg-green"></span>
-          <span className="text-green font-mono text-[0.8em] tracking-wider">
+          <span className="text-green font-mono text-[0.78em] tracking-wider">
             {
               messages.length > 0 ? "Response received."
                 : "Diagnostic engine connected. Describe the vibration in screw compressor to begin."

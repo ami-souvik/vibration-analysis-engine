@@ -13,20 +13,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen p-[10px]">
+      <body className="flex flex-col min-h-screen p-[10px] sm:p-[18px]">
         <div className="max-w-[1420px] w-full mx-auto flex flex-col flex-1">
-          <header className="bg-gradient-to-b from-bg-elev to-bg-base border border-border rounded-lg py-[18px] px-6 mb-[14px] flex flex-col items-start justify-between gap-6 relative overflow-hidden shrink-0">
+          <header className="bg-gradient-to-b from-bg-elev to-bg-base border border-border rounded-lg py-[18px] sm:py-[18px] px-[14px] sm:px-[14px] mb-[14px] flex items-center justify-between gap-6 relative overflow-hidden shrink-0">
             {/* Header background glow effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-soft to-transparent opacity-40 pointer-events-none"></div>
 
             <div className="flex items-center gap-[14px] relative z-10">
-              <div className="w-[38px] h-[38px] border border-accent rounded grid place-items-center bg-bg-deep relative">
+              <div className="min-h-[38px] min-w-[38px] border border-accent rounded grid place-items-center bg-bg-deep relative">
                 <div className="absolute left-[7px] right-[7px] top-1/2 h-px -translate-y-[6px] bg-accent opacity-40"></div>
                 <div className="absolute left-[7px] right-[7px] top-1/2 h-[2px] bg-accent"></div>
                 <div className="absolute left-[7px] right-[7px] top-1/2 h-px translate-y-[6px] bg-accent opacity-40"></div>
               </div>
               <div>
-                <h1 className="font-mono text-[1.05em] font-semibold tracking-[0.04em] text-text uppercase m-0 leading-tight">
+                <h1 className="font-mono text-[0.95em] font-semibold tracking-[0.04em] text-text uppercase m-0 leading-tight">
                   VDX<span className="text-accent"> &middot; </span>VIBRATION DIAGNOSTIC ENGINE
                 </h1>
                 <p className="text-text-mute text-[0.78em] tracking-[0.08em] uppercase mt-[2px] m-0">

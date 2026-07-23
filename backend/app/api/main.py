@@ -77,7 +77,7 @@ def diagnose_from_text(req: TextDiagnoseRequest):
     
     if params.conversational_reply:
         return {"status": "conversation", "reply": params.conversational_reply}
-        
+
     if params.missing_fields:
         return {"status": "missing_fields", "missing": params.missing_fields, "params": params.model_dump()}
         
