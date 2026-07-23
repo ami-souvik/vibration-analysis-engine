@@ -94,7 +94,7 @@ def diagnose_from_text(req: TextDiagnoseRequest):
         bearing_numbers=params.bearing_numbers
     )
     
-    narration = generate_diagnosis_narration(result, req.text)
+    narration = generate_diagnosis_narration(result, req.text, params)
     return {"status": "success", "result": result.model_dump(), "narration": narration, "params": params.model_dump()}
 
 @app.get("/api/spectrum/bearing/{bearing_number}")
