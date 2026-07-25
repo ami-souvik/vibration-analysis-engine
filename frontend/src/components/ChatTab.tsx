@@ -8,6 +8,85 @@ export interface Message {
   data?: any;
 }
 
+function FormattedText({ text }: { text: string }) {
+  if (!text) return null;
+
+  const lines = text.split("\n");
+  return (
+    <div className="space-y-1.5 text-[0.95em] leading-[1.6]">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} className="h-1.5" />;
+        }
+
+        const leadingSpaces = line.search(/\S|$/);
+        const indentClass =
+          leadingSpaces >= 8
+            ? "ml-8"
+            : leadingSpaces >= 4
+            ? "ml-4"
+            : leadingSpaces >= 2
+            ? "ml-2"
+            : "";
+
+        const isBullet = trimmed.startsWith("* ") || trimmed.startsWith("- ");
+        const contentText = isBullet ? trimmed.slice(2) : line;
+
+        const isHeader =
+          !isBullet &&
+          (trimmed.endsWith(":") ||
+            trimmed.startsWith("Thank you") ||
+            trimmed.includes("Diagnostic"));
+
+        const renderFormattedInline = (str: string) => {
+          const parts = str.split(/(\*\*.*?\*\*)/g);
+          return parts.map((part, i) => {
+            if (part.startsWith("**") && part.endsWith("**")) {
+              return (
+                <strong key={i} className="font-semibold text-text">
+                  {part.slice(2, -2)}
+                </strong>
+              );
+            }
+            return <span key={i}>{part}</span>;
+          });
+        };
+
+        if (isHeader) {
+          return (
+            <div
+              key={idx}
+              className={`font-mono font-bold text-accent tracking-wide mt-3 mb-1 ${indentClass}`}
+            >
+              {renderFormattedInline(trimmed)}
+            </div>
+          );
+        }
+
+        if (isBullet) {
+          return (
+            <div key={idx} className={`flex items-start gap-2 ${indentClass}`}>
+              <span className="text-accent shrink-0 font-mono mt-[3px] text-[0.7em]">
+                &#9670;
+              </span>
+              <span className="text-text-mute">
+                {renderFormattedInline(contentText)}
+              </span>
+            </div>
+          );
+        }
+
+        return (
+          <div key={idx} className={`text-text-mute ${indentClass}`}>
+            {renderFormattedInline(line)}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 interface ChatTabProps {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
@@ -150,13 +229,8 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
                 }`}>
                 {msg.sender === "user" ? "OPERATOR" : "DIAGNOSTIC ENGINE"}
               </div>
-              <div className="text-text text-[0.95em] whitespace-pre-wrap leading-[1.6]">
-                {msg.text}
-                {msg.data && msg.sender === "engine" && (
-                  <pre className="mt-4 p-3 bg-bg-deep rounded text-xs overflow-x-auto border border-border text-text-dim">
-                    {JSON.stringify(msg.data, null, 2)}
-                  </pre>
-                )}
+              <div className="text-text">
+                <FormattedText text={msg.text} />
               </div>
             </div>
           </div>

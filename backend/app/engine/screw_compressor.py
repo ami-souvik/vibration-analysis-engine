@@ -1,11 +1,12 @@
 from .models import FaultFrequency, MatchedPeak, DiagnosticResult
 from typing import Dict, List, Optional
+from app.engine.spectrum import get_or_estimate_bearing_geometry, calculate_spectrum_faults
 
-def match_peaks(calculated_freqs: List[FaultFrequency], measured_peaks: Dict[str, float], tolerance_pct: float = 2.0) -> List[MatchedPeak]:
+def match_peaks(calculated_freqs: List[FaultFrequency], measured_peaks: Dict[str, float], tolerance_pct: float = 3.5) -> List[MatchedPeak]:
     matched = []
     for peak_name, peak_hz in measured_peaks.items():
         for calc in calculated_freqs:
-            tolerance = calc.frequency_hz * (tolerance_pct / 100.0)
+            tolerance = max(0.5, calc.frequency_hz * (tolerance_pct / 100.0))
             if abs(peak_hz - calc.frequency_hz) <= tolerance:
                 # Calculate confidence based on how close it is
                 diff = abs(peak_hz - calc.frequency_hz)
@@ -26,25 +27,28 @@ def get_vdi3836_limit(machine_group: str, foundation_type: str) -> Optional[floa
         "Group 2": {"Rigid": 3.0, "Flexible": 5.0},
         "Group 3": {"Rigid": 3.0, "Flexible": 4.5},
     }
-    return limits.get(group_key, {}).get(foundation_type)
+    return limits.get(group_key, {}).get(foundation_type, 3.0)
 
-def get_mock_bearing_faults(motor_rpm: float, bearing_numbers: List[str]) -> List[FaultFrequency]:
-    # Mock database for BPFI, BPFO, BSF, FTF multipliers
-    # Multipliers are typically applied to shaft running speed
-    speed_hz = motor_rpm / 60.0
-    mock_db = {
-        "7309": {"BPFI": 5.95, "BPFO": 4.05, "BSF": 2.3, "FTF": 0.4},
-        "NU 309": {"BPFI": 7.12, "BPFO": 4.88, "BSF": 2.9, "FTF": 0.42}
-    }
-    
+def get_bearing_faults(motor_rpm: float, bearing_numbers: List[str]) -> List[FaultFrequency]:
     freqs = []
     for bearing in bearing_numbers:
-        for key, mults in mock_db.items():
-            if key in bearing.upper():
-                freqs.append(FaultFrequency(label=f"BPFI ({bearing})", frequency_hz=mults["BPFI"] * speed_hz, description="Inner Race Defect"))
-                freqs.append(FaultFrequency(label=f"BPFO ({bearing})", frequency_hz=mults["BPFO"] * speed_hz, description="Outer Race Defect"))
-                freqs.append(FaultFrequency(label=f"BSF ({bearing})", frequency_hz=mults["BSF"] * speed_hz, description="Rolling Element Defect"))
-                freqs.append(FaultFrequency(label=f"FTF ({bearing})", frequency_hz=mults["FTF"] * speed_hz, description="Cage Defect"))
+        geom = get_or_estimate_bearing_geometry(bearing)
+        results = calculate_spectrum_faults(
+            shaft_rpm=motor_rpm,
+            balls=geom.balls,
+            ball_diameter=geom.ball_diameter,
+            pitch_diameter=geom.pitch_diameter,
+            contact_angle=geom.contact_angle
+        )
+        for res in results:
+            if "Shaft" not in res.label:
+                # Extract clean prefix (BPFI, BPFO, BSF, FTF)
+                code = res.label.split(" - ")[0]
+                freqs.append(FaultFrequency(
+                    label=f"{code} ({bearing})",
+                    frequency_hz=res.frequency_hz,
+                    description=res.description
+                ))
     return freqs
 
 def diagnose_screw_compressor(
@@ -58,7 +62,7 @@ def diagnose_screw_compressor(
     bearing_numbers: Optional[List[str]] = None
 ) -> DiagnosticResult:
     male_speed_hz = motor_rpm / 60.0
-    female_speed_hz = (motor_rpm * (male_lobes / female_lobes)) / 60.0
+    female_speed_hz = (motor_rpm * (male_lobes / female_lobes)) / 60.0 if female_lobes else male_speed_hz
     rmf_hz = male_lobes * male_speed_hz
     
     freqs = []
@@ -83,12 +87,11 @@ def diagnose_screw_compressor(
         
     # Bearing Faults
     if bearing_numbers:
-        freqs.extend(get_mock_bearing_faults(motor_rpm, bearing_numbers))
+        freqs.extend(get_bearing_faults(motor_rpm, bearing_numbers))
         
     matched = match_peaks(freqs, measured_peaks)
     
     # Generalized Non-Synchronous High-Frequency Bearing Check
-    # If a peak is high frequency (> 3x RMF) and didn't match anything else, flag it as potential bearing defect
     matched_freqs = [m.measured_frequency_hz for m in matched]
     for peak_name, peak_hz in measured_peaks.items():
         if peak_hz not in matched_freqs:
@@ -109,7 +112,7 @@ def diagnose_screw_compressor(
         else:
             verdict = "Fail"
     elif overall_vibration_rms is None:
-         verdict = "No overall vibration provided"
+        verdict = "No overall vibration provided"
             
     return DiagnosticResult(
         machine_type="Screw Compressor",

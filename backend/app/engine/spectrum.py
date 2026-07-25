@@ -9,13 +9,34 @@ class BearingGeometry(BaseModel):
     pitch_diameter: float
     contact_angle: float
 
-# Mock Database
-BEARING_DB = {
-    "7309": BearingGeometry(bearing_number="7309", balls=16, ball_diameter=12.5, pitch_diameter=90.0, contact_angle=0.0),
-    "NU 309": BearingGeometry(bearing_number="NU 309", balls=14, ball_diameter=14.0, pitch_diameter=95.0, contact_angle=0.0),
-    "6310": BearingGeometry(bearing_number="6310", balls=8, ball_diameter=15.0, pitch_diameter=100.0, contact_angle=0.0),
-    "3387": BearingGeometry(bearing_number="3387", balls=12, ball_diameter=10.0, pitch_diameter=80.0, contact_angle=0.0)
+# Comprehensive Bearing Geometry Database
+BEARING_DB: Dict[str, BearingGeometry] = {
+    "7309": BearingGeometry(bearing_number="7309", balls=10, ball_diameter=15.88, pitch_diameter=72.5, contact_angle=40.0),
+    "NU 309": BearingGeometry(bearing_number="NU 309", balls=13, ball_diameter=16.0, pitch_diameter=80.0, contact_angle=0.0),
+    "6310": BearingGeometry(bearing_number="6310", balls=8, ball_diameter=19.05, pitch_diameter=80.0, contact_angle=0.0),
+    "6309": BearingGeometry(bearing_number="6309", balls=8, ball_diameter=17.46, pitch_diameter=72.5, contact_angle=0.0),
+    "6308": BearingGeometry(bearing_number="6308", balls=8, ball_diameter=15.08, pitch_diameter=65.0, contact_angle=0.0),
+    "3387": BearingGeometry(bearing_number="3387", balls=12, ball_diameter=10.0, pitch_diameter=80.0, contact_angle=0.0),
+    "7307": BearingGeometry(bearing_number="7307", balls=10, ball_diameter=12.7, pitch_diameter=58.5, contact_angle=40.0),
+    "NU 307": BearingGeometry(bearing_number="NU 307", balls=13, ball_diameter=12.0, pitch_diameter=62.5, contact_angle=0.0),
 }
+
+def get_or_estimate_bearing_geometry(bearing_name: str) -> BearingGeometry:
+    clean_name = bearing_name.upper().replace("DE", "").replace("NDE", "").strip()
+    
+    # Direct or partial lookup
+    for key, geom in BEARING_DB.items():
+        if key in clean_name or clean_name in key:
+            return geom
+            
+    # Generic estimation fallback if designation not in DB
+    return BearingGeometry(
+        bearing_number=bearing_name,
+        balls=10,
+        ball_diameter=15.0,
+        pitch_diameter=75.0,
+        contact_angle=0.0
+    )
 
 class FaultFrequencyResult(BaseModel):
     label: str
@@ -39,16 +60,9 @@ def calculate_spectrum_faults(
     angle_rad = math.radians(contact_angle)
     
     # Formulas
-    # FTF = (fs/2) * (1 - (Bd/Pd)*cos(theta))
     ftf = (fs / 2.0) * (1.0 - (ball_diameter / pitch_diameter) * math.cos(angle_rad))
-    
-    # BPFO = balls * FTF
     bpfo = balls * ftf
-    
-    # BPFI = (balls * fs / 2) * (1 + (Bd/Pd)*cos(theta))
     bpfi = (balls * fs / 2.0) * (1.0 + (ball_diameter / pitch_diameter) * math.cos(angle_rad))
-    
-    # BSF = (Pd / 2Bd) * fs * (1 - (Bd/Pd * cos(theta))^2)
     bsf = (pitch_diameter / (2.0 * ball_diameter)) * fs * (1.0 - math.pow((ball_diameter / pitch_diameter) * math.cos(angle_rad), 2))
 
     return [
