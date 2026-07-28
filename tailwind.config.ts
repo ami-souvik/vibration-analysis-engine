@@ -30,6 +30,12 @@ const config: Config = {
         mono: ['"JetBrains Mono"', 'ui-monospace', '"SF Mono"', 'Menlo', 'Consolas', 'monospace'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },
+      fontSize: {
+        'tight-md': ['0.92em', { lineHeight: '0.2' }],
+        'display-xs': ['0.72em', { lineHeight: '1.4' }],
+        'display-sm': ['0.78em', { lineHeight: '1.6' }],
+        'display-md': ['0.92em', { lineHeight: '1.8' }],
+      }
     },
   },
   plugins: [],

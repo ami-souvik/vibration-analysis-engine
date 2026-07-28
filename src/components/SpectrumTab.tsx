@@ -14,6 +14,8 @@ interface FaultFrequency {
 export default function SpectrumTab() {
   const [bearingNumber, setBearingNumber] = useState("7309");
   const [shaftSpeed, setShaftSpeed] = useState("3000");
+  const [maleLobes, setMaleLobes] = useState("4");
+  const [femaleLobes, setFemaleLobes] = useState("6");
   const [balls, setBalls] = useState("16");
   const [ballDiameter, setBallDiameter] = useState("12.5");
   const [pitchDiameter, setPitchDiameter] = useState("90");
@@ -75,6 +77,8 @@ export default function SpectrumTab() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           shaft_rpm: parseFloat(shaftSpeed),
+          male_lobes: parseInt(maleLobes) || 4,
+          female_lobes: parseInt(femaleLobes) || 6,
           balls: parseInt(balls),
           ball_diameter: parseFloat(ballDiameter),
           pitch_diameter: parseFloat(pitchDiameter),
@@ -119,33 +123,34 @@ export default function SpectrumTab() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-bg-base p-7 flex flex-col gap-8 text-sm">
+    <div className="flex-1 overflow-y-auto bg-bg-base p-4 md:p-7 flex flex-col gap-8 text-sm">
       {/* Measurement Guidance */}
       <div className="bg-bg-elev border border-border rounded-md py-4 px-5">
-        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-[0.72em] border-b border-b-border before:content-['//_'] before:text-accent">Measurement Guidance</h3>
-        < ul className="space-y-1 text-text-mute flex flex-col">
+        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-display-xs border-b border-b-border before:content-['//_'] before:text-accent">Measurement Guidance</h3>
+        <ul className="space-y-1 text-text-mute flex flex-col">
           <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">FFT line resolution should be set to <strong className="text-text">800 lines</strong> to capture proper fault-frequency detail.</li>
-          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">For overall machine health, report <strong className="text-text">overall vibration in mm/sec RMS or microns pk-pk</strong>.</li>
+          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">For overall machine health, report <strong className="text-text">overall vibration in mm/sec RMS</strong> (VDI 3836 / ISO 10816-7).</li>
           <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">When reporting individual <strong className="text-text">peak frequencies</strong>, use <strong className="text-text">mm/sec or microns pk-pk</strong> - do not use RMS at the peak level.</li>
-          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">Even when pump & motor are joined by a <strong className="text-text">flexible coupling</strong>, analyse <strong className="text-text">both units</strong> - pump-side faults can propagate to the motor and vice versa.</li>
+          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2"><strong className="text-text">Rotor Mesh Frequency (RMF = Male Lobes × Speed)</strong> and <strong className="text-text">Female Rotor Speed</strong> are computed to identify pocket passing and meshing anomalies.</li>
+          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">Even when compressor & motor are joined by a <strong className="text-text">flexible coupling</strong>, analyse <strong className="text-text">both units</strong> - compressor-side faults can propagate to the motor and vice versa.</li>
         </ul>
       </div>
 
       {/* Bearing Designation */}
       <div>
-        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-[0.72em] border-b border-b-border before:content-['//_'] before:text-accent">
+        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-display-xs border-b border-b-border before:content-['//_'] before:text-accent">
           Bearing Designation (Auto-Fills Geometry)
         </h3>
         <div className="flex gap-4 items-end">
           <div className="flex flex-col flex-1 gap-2">
-            <label className="text-text-mute text-xs uppercase tracking-widest font-mono">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">
               Bearing Number (e.g. 7309, NU309, 6310, 3307)
             </label>
             <input
               value={bearingNumber}
               onChange={(e) => setBearingNumber(e.target.value)}
-              placeholder="Type bearing designation, then click Load Geometry"
-              className="bg-bg-elev border border-border rounded px-4 py-3 text-text w-full font-mono focus:outline-none focus:border-accent"
+              placeholder="Type bearing designation, then click Load"
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
             />
           </div>
           <button
@@ -159,48 +164,64 @@ export default function SpectrumTab() {
 
       {/* Bearing Geometry */}
       <div>
-        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-[0.72em] border-b border-b-border before:content-['//_'] before:text-accent">
-          Bearing Geometry & Operating Speed
+        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-display-xs border-b border-b-border before:content-['//_'] before:text-accent">
+          Rotor Geometry & Operating Speed
         </h3>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label className="text-text-mute text-xs uppercase tracking-widest font-mono">Shaft Speed (RPM)</label>
+          <div className="flex flex-col gap-1">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Male Rotor Speed / Shaft Speed (RPM)</label>
             <input
               value={shaftSpeed}
               onChange={(e) => setShaftSpeed(e.target.value)}
-              className="bg-bg-elev border border-border rounded px-4 py-3 text-text w-full font-mono focus:outline-none focus:border-accent"
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-text-mute text-xs uppercase tracking-widest font-mono">Number of Balls / Rollers</label>
+          <div className="flex flex-col gap-1">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Male Rotor Lobes Count</label>
+            <input
+              value={maleLobes}
+              onChange={(e) => setMaleLobes(e.target.value)}
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Female Rotor Lobes Count</label>
+            <input
+              value={femaleLobes}
+              onChange={(e) => setFemaleLobes(e.target.value)}
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Number of Balls / Rollers</label>
             <input
               value={balls}
               onChange={(e) => setBalls(e.target.value)}
-              className="bg-bg-elev border border-border rounded px-4 py-3 text-text w-full font-mono focus:outline-none focus:border-accent"
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-text-mute text-xs uppercase tracking-widest font-mono">Ball Diameter (mm)</label>
+          <div className="flex flex-col gap-1">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Ball Diameter (mm)</label>
             <input
               value={ballDiameter}
               onChange={(e) => setBallDiameter(e.target.value)}
-              className="bg-bg-elev border border-border rounded px-4 py-3 text-text w-full font-mono focus:outline-none focus:border-accent"
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-text-mute text-xs uppercase tracking-widest font-mono">Pitch Diameter (mm)</label>
+          <div className="flex flex-col gap-1">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Pitch Diameter (mm)</label>
             <input
               value={pitchDiameter}
               onChange={(e) => setPitchDiameter(e.target.value)}
-              className="bg-bg-elev border border-border rounded px-4 py-3 text-text w-full font-mono focus:outline-none focus:border-accent"
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-text-mute text-xs uppercase tracking-widest font-mono">Contact Angle (°)</label>
+          <div className="flex flex-col gap-1">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Contact Angle (°)</label>
             <input
               value={contactAngle}
               onChange={(e) => setContactAngle(e.target.value)}
-              className="bg-bg-elev border border-border rounded px-4 py-3 text-text w-full font-mono focus:outline-none focus:border-accent"
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
             />
           </div>
         </div>
@@ -208,22 +229,22 @@ export default function SpectrumTab() {
 
       {/* Operator Peaks */}
       <div>
-        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-[0.72em] border-b border-b-border before:content-['//_'] before:text-accent">
+        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-display-xs border-b border-b-border before:content-['//_'] before:text-accent">
           Operator-Reported Peaks (Optional)
         </h3>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-text-mute text-xs uppercase tracking-widest font-mono">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">
               Peak Frequencies - Comma separated Hz (e.g. 49.7, 99.3, 228, 338)
             </label>
             <input
               value={peakFrequencies}
               onChange={(e) => setPeakFrequencies(e.target.value)}
-              className="bg-bg-elev border border-border rounded px-4 py-3 text-text w-full font-mono focus:outline-none focus:border-accent"
+              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-text-mute text-xs uppercase tracking-widest font-mono">
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">
               CSV Upload (Frequency, Amplitude)
             </label>
             <div className="bg-bg-elev border border-border rounded px-3 py-2 flex items-center">
@@ -288,7 +309,7 @@ export default function SpectrumTab() {
       {analysisResults.length > 0 && (
         <div className="border border-border rounded overflow-hidden">
           <table className="w-full text-left text-sm font-mono">
-            <thead className="bg-bg-elev text-text-dim text-xs uppercase tracking-widest border-b border-border">
+            <thead className="bg-bg-elev text-text-dim text-display-xs uppercase tracking-widest border-b border-border">
               <tr>
                 <th className="p-4 font-normal">Fault Frequency</th>
                 <th className="p-4 font-normal">Frequency (Hz)</th>

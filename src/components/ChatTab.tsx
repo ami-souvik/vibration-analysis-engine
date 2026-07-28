@@ -210,7 +210,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-bg-base">
-      <div className="border border-[#3fb9504d] bg-[#3fb9500d] rounded-md px-3 py-2 flex items-center gap-[10px] m-7">
+      <div className="border border-[#3fb9504d] bg-[#3fb9500d] rounded-md px-3 py-2 flex items-center gap-[10px] m-4 md:m-7">
         <span className="size-1.5 rounded-full bg-green"></span>
         <span className="text-green font-mono text-[0.78em] tracking-wider">
           {
@@ -246,10 +246,10 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-3 shrink-0">
+      <div className="p-4 md:px-7 shrink-0">
         <div className="border border-accent rounded-lg flex flex-col px-3 py-2 bg-bg-elev">
-          <div className="flex items-center gap-2 text-accent font-mono text-[0.72em] uppercase font-bold tracking-widest mb-2">
-            <span className="opacity-60">&gt;</span> OPERATOR INPUT &mdash; DESCRIBE MACHINE STATE
+          <div className="flex items-center text-accent font-mono text-display-xs uppercase font-bold tracking-widest mb-2 before:content-['›'] before:text-[12px] before:text-accent before:mr-2">
+            OPERATOR INPUT &mdash; DESCRIBE MACHINE STATE
           </div>
           <div className="flex gap-2 items-end">
             <textarea
@@ -262,7 +262,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
                 }
               }}
               placeholder="Type your query here - e.g. Vibration analysis of screw compressor with anti friction bearings..."
-              className="flex-1 bg-transparent rounded-md border border-border-soft pl-2 pt-2 focus:outline-none text-text placeholder:text-text-dim resize-none text-[0.9em] leading-relaxed"
+              className="flex-1 bg-transparent rounded-md border border-border-soft pl-2 pt-2 focus:outline-none text-text placeholder:text-text-dim resize-none text-tight-xs leading-relaxed"
               rows={4}
             />
             <button

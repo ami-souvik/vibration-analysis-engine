@@ -35,13 +35,19 @@ export function calculateSpectrumFaults(params: {
   ball_diameter: number;
   pitch_diameter: number;
   contact_angle: number;
+  male_lobes?: number;
+  female_lobes?: number;
 }): FaultFrequencyResult[] {
-  const { shaft_rpm, balls, ball_diameter, pitch_diameter, contact_angle } = params;
+  const { shaft_rpm, balls, ball_diameter, pitch_diameter, contact_angle, male_lobes = 4, female_lobes = 6 } = params;
 
   const fs = shaft_rpm / 60.0;
   if (fs === 0 || pitch_diameter === 0) {
     return [];
   }
+
+  const femaleSpeedHz = (fs * male_lobes) / female_lobes;
+  const rmfHz = male_lobes * fs;
+  const rmf2xHz = 2 * rmfHz;
 
   const angleRad = (contact_angle * Math.PI) / 180.0;
   const cosAngle = Math.cos(angleRad);
@@ -55,7 +61,10 @@ export function calculateSpectrumFaults(params: {
     (1.0 - Math.pow((ball_diameter / pitch_diameter) * cosAngle, 2));
 
   return [
-    { label: "Shaft (1x)", frequency_hz: Number(fs.toFixed(2)), ratio: "1.00x", description: "Reference - running speed" },
+    { label: "Male Rotor Speed (1x Male Speed)", frequency_hz: Number(fs.toFixed(2)), ratio: "1.00x", description: "Reference - male rotor running speed" },
+    { label: "Female Rotor Speed (1x Female Speed)", frequency_hz: Number(femaleSpeedHz.toFixed(2)), ratio: `${(femaleSpeedHz / fs).toFixed(2)}x`, description: "Female rotor running speed" },
+    { label: "Rotor Mesh Frequency (RMF)", frequency_hz: Number(rmfHz.toFixed(2)), ratio: `${(rmfHz / fs).toFixed(2)}x`, description: "Normal Gas Pulsation / Lobe mesh" },
+    { label: "2x RMF (Pocket Passing)", frequency_hz: Number(rmf2xHz.toFixed(2)), ratio: `${(rmf2xHz / fs).toFixed(2)}x`, description: "Rotor-to-rotor contact / gas pulsation" },
     { label: "FTF - Fundamental Train Frequency", frequency_hz: Number(ftf.toFixed(2)), ratio: `${(ftf / fs).toFixed(2)}x`, description: "Cage defect" },
     { label: "BPFO - Ball Pass Outer Race", frequency_hz: Number(bpfo.toFixed(2)), ratio: `${(bpfo / fs).toFixed(2)}x`, description: "Outer race defect" },
     { label: "BPFI - Ball Pass Inner Race", frequency_hz: Number(bpfi.toFixed(2)), ratio: `${(bpfi / fs).toFixed(2)}x`, description: "Inner race defect" },
