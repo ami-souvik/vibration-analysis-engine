@@ -8,12 +8,12 @@ interface ReportTabProps {
 }
 
 export default function ReportTab({ messages, setMessages }: ReportTabProps) {
-  
+
   // Group messages into Q/A pairs
   const exchanges: { question: Message; answer: Message | null; timestamp: string }[] = [];
-  
+
   let currentQuestion: Message | null = null;
-  
+
   // A naive pairing logic assuming conversation flows as User -> Engine
   messages.forEach((msg) => {
     if (msg.sender === "user") {
@@ -30,7 +30,7 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
       }
     }
   });
-  
+
   if (currentQuestion) {
     const q = currentQuestion as Message;
     exchanges.push({ question: q, answer: null, timestamp: new Date(parseInt(q.id)).toLocaleString() });
@@ -49,11 +49,11 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-background p-[18px] flex flex-col gap-8 text-sm">
+    <div className="flex-1 overflow-y-auto bg-bg-base p-7 flex flex-col gap-8 text-sm">
       <div className="flex flex-col">
         <h3 className="text-text-dim font-mono tracking-widest uppercase mb-4 text-xs">{"// Session Diagnostic Report"}</h3>
         <p className="text-text-mute text-sm mb-6">{exchanges.length} diagnostic exchanges captured</p>
-        
+
         <div className="flex flex-col gap-6">
           {exchanges.map((ex, index) => (
             <div key={index} className="bg-[#11161d] border border-border p-6 rounded-md flex flex-col gap-4">
@@ -81,8 +81,8 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
         <button className="bg-bg-elev border border-border text-text font-mono uppercase tracking-widest px-8 py-3 rounded hover:bg-bg-deep transition-colors">
           Export Session CSV
         </button>
-        <button 
-          onClick={() => setMessages([])} 
+        <button
+          onClick={() => setMessages([])}
           className="bg-red-500 text-white font-mono font-bold uppercase tracking-widest px-8 py-3 rounded hover:bg-red-600 transition-colors ml-auto"
         >
           Clear Session
