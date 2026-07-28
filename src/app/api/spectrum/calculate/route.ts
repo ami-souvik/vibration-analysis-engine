@@ -6,6 +6,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const faults = calculateSpectrumFaults({
       shaft_rpm: body.shaft_rpm,
+      male_lobes: body.male_lobes,
+      female_lobes: body.female_lobes,
       balls: body.balls,
       ball_diameter: body.ball_diameter,
       pitch_diameter: body.pitch_diameter,

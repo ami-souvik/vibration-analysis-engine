@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VDX — Vibration Diagnostic Engine",
+  title: "VDX - Vibration Diagnostic Engine",
   description: "Chat-style diagnostic console for machine-reliability operators",
 };
 
@@ -15,7 +15,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex flex-col min-h-screen p-[10px] sm:p-[18px]">
         <div className="max-w-[1420px] w-full mx-auto flex flex-col flex-1">
-          <header className="bg-gradient-to-b from-bg-elev to-bg-base border border-border rounded-lg py-[18px] sm:py-[18px] px-[14px] sm:px-[14px] mb-[14px] flex items-center justify-between gap-6 relative overflow-hidden shrink-0">
+          <header className="bg-gradient-to-b from-bg-elev to-bg-base border border-border rounded-lg py-[18px] sm:py-[18px] px-[14px] sm:px-[14px] mb-[14px] flex max-sm:flex-col items-start justify-between gap-[8px] md:gap-6 relative overflow-hidden shrink-0">
             {/* Header background glow effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-soft to-transparent opacity-40 pointer-events-none"></div>
 

@@ -22,14 +22,18 @@ const config: Config = {
         "accent-soft": "var(--accent-soft)",
         cyan: "var(--cyan)",
         "cyan-soft": "var(--cyan-soft)",
-        green: "var(--green)",
-        red: "var(--red)",
-        "red-soft": "var(--red-soft)",
+        green: "var(--green)"
       },
       fontFamily: {
         mono: ['"JetBrains Mono"', 'ui-monospace', '"SF Mono"', 'Menlo', 'Consolas', 'monospace'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },
+      fontSize: {
+        'tight-md': ['0.92em', { lineHeight: '0.2' }],
+        'display-xs': ['0.72em', { lineHeight: '1.4' }],
+        'display-sm': ['0.78em', { lineHeight: '1.6' }],
+        'display-md': ['0.92em', { lineHeight: '1.8' }],
+      }
     },
   },
   plugins: [],

@@ -11,10 +11,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full flex-1">
-      <div className="bg-bg-elev border border-border rounded-t-lg flex p-2 gap-2">
+      <div className="bg-bg-elev border border-border rounded-t-lg flex px-2 pt-2 gap-2">
         <button
           onClick={() => setActiveTab("diagnosis")}
-          className={`px-4 py-2 font-mono font-semibold uppercase text-[0.75em] tracking-widest transition-colors flex items-center gap-2 rounded-md ${activeTab === "diagnosis" ? "bg-bg-deep text-text" : "text-text-dim hover:text-text-mute"
+          className={`px-4 py-2 font-mono font-semibold uppercase text-[0.75em] tracking-widest transition-colors flex items-center gap-2 rounded-t-md ${activeTab === "diagnosis" ? "bg-bg-base text-text" : "hover:bg-accent text-text-dim hover:text-white"
             }`}
         >
           <span className={`size-1.5 rounded-full ${activeTab === "diagnosis" ? "bg-accent" : "bg-text-dim"}`}></span>
@@ -22,7 +22,7 @@ export default function Home() {
         </button>
         <button
           onClick={() => setActiveTab("spectrum")}
-          className={`px-4 py-2 font-mono font-semibold uppercase text-[0.75em] tracking-widest transition-colors flex items-center gap-2 rounded-md ${activeTab === "spectrum" ? "bg-bg-deep text-text" : "text-text-dim hover:text-text-mute"
+          className={`px-4 py-2 font-mono font-semibold uppercase text-[0.75em] tracking-widest transition-colors flex items-center gap-2 rounded-t-md ${activeTab === "spectrum" ? "bg-bg-base text-text" : "hover:bg-accent text-text-dim hover:text-white"
             }`}
         >
           <span className={`w-1.5 h-1.5 rounded-full ${activeTab === "spectrum" ? "bg-accent" : "bg-text-dim"}`}></span>
@@ -30,7 +30,7 @@ export default function Home() {
         </button>
         <button
           onClick={() => setActiveTab("report")}
-          className={`px-4 py-2 font-mono font-semibold uppercase text-[0.75em] tracking-widest transition-colors flex items-center gap-2 rounded-md ${activeTab === "report" ? "bg-bg-deep text-text" : "text-text-dim hover:text-text-mute"
+          className={`px-4 py-2 font-mono font-semibold uppercase text-[0.75em] tracking-widest transition-colors flex items-center gap-2 rounded-t-md ${activeTab === "report" ? "bg-bg-base text-text" : "hover:bg-accent text-text-dim hover:text-white"
             }`}
         >
           <span className={`w-1.5 h-1.5 rounded-full ${activeTab === "report" ? "bg-accent" : "bg-text-dim"}`}></span>

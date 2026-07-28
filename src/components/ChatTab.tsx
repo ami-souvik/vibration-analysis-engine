@@ -27,10 +27,10 @@ function FormattedText({ text }: { text: string }) {
           leadingSpaces >= 8
             ? "ml-8"
             : leadingSpaces >= 4
-            ? "ml-4"
-            : leadingSpaces >= 2
-            ? "ml-2"
-            : "";
+              ? "ml-4"
+              : leadingSpaces >= 2
+                ? "ml-2"
+                : "";
 
         const isBullet = trimmed.startsWith("* ") || trimmed.startsWith("- ");
         const contentText = isBullet ? trimmed.slice(2) : line;
@@ -210,16 +210,16 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-bg-base">
-      <div className="flex-1 overflow-y-auto space-y-6 pb-6">
-        <div className="border border-green bg-green/5 rounded-md px-3 py-2 flex items-center gap-[10px] mx-3 mt-3">
-          <span className="size-1.5 rounded-full bg-green"></span>
-          <span className="text-green font-mono text-[0.78em] tracking-wider">
-            {
-              messages.length > 0 ? "Response received."
-                : "Diagnostic engine connected. Describe the vibration in screw compressor to begin."
-            }
-          </span>
-        </div>
+      <div className="border border-[#3fb9504d] bg-[#3fb9500d] rounded-md px-3 py-2 flex items-center gap-[10px] m-4 md:m-7">
+        <span className="size-1.5 rounded-full bg-green"></span>
+        <span className="text-green font-mono text-[0.78em] tracking-wider">
+          {
+            messages.length > 0 ? "Response received."
+              : "Diagnostic engine connected. Describe the vibration in screw compressor to begin."
+          }
+        </span>
+      </div>
+      <div className="max-w-[880px] mx-auto flex-1 overflow-y-auto space-y-6 pb-6">
         {messages.map((msg) => (
           <div key={msg.id} className="flex gap-4 mx-6">
             <div className={`size-[38px] border rounded flex items-center justify-center font-mono text-[0.65em] font-semibold tracking-wider shrink-0 mt-[2px] ${msg.sender === "user" ? "border-border-soft text-text-mute bg-bg-elev" : "border-accent text-accent bg-bg-deep"
@@ -246,10 +246,10 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-3 shrink-0">
+      <div className="p-4 md:px-7 shrink-0">
         <div className="border border-accent rounded-lg flex flex-col px-3 py-2 bg-bg-elev">
-          <div className="flex items-center gap-2 text-accent font-mono text-[0.72em] uppercase font-bold tracking-widest mb-2">
-            <span className="opacity-60">&gt;</span> OPERATOR INPUT &mdash; DESCRIBE MACHINE STATE
+          <div className="flex items-center text-accent font-mono text-display-xs uppercase font-bold tracking-widest mb-2 before:content-['›'] before:text-[12px] before:text-accent before:mr-2">
+            OPERATOR INPUT &mdash; DESCRIBE MACHINE STATE
           </div>
           <div className="flex gap-2 items-end">
             <textarea
@@ -261,8 +261,8 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
                   handleSend();
                 }
               }}
-              placeholder="Type your query here — e.g. Vibration analysis of screw compressor with anti friction bearings..."
-              className="flex-1 bg-transparent rounded-md border border-border-soft pl-4 focus:outline-none text-text placeholder:text-text-dim resize-none text-[0.9em] leading-relaxed"
+              placeholder="Type your query here - e.g. Vibration analysis of screw compressor with anti friction bearings..."
+              className="flex-1 bg-transparent rounded-md border border-border pl-2 pt-2 focus:outline-none text-text placeholder:text-text-dim resize-none text-tight-xs leading-relaxed"
               rows={4}
             />
             <button
