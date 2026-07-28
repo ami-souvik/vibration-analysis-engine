@@ -22,9 +22,7 @@ const config: Config = {
         "accent-soft": "var(--accent-soft)",
         cyan: "var(--cyan)",
         "cyan-soft": "var(--cyan-soft)",
-        green: "var(--green)",
-        red: "var(--red)",
-        "red-soft": "var(--red-soft)",
+        green: "var(--green)"
       },
       fontFamily: {
         mono: ['"JetBrains Mono"', 'ui-monospace', '"SF Mono"', 'Menlo', 'Consolas', 'monospace'],

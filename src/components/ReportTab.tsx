@@ -49,14 +49,14 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-bg-base p-7 flex flex-col gap-8 text-sm">
+    <div className="flex-1 overflow-y-auto bg-bg-base p-4 md:p-7 flex flex-col gap-8 text-sm">
       <div className="flex flex-col">
-        <h3 className="text-text-dim font-mono tracking-widest uppercase mb-4 text-xs">{"// Session Diagnostic Report"}</h3>
-        <p className="text-text-mute text-sm mb-6">{exchanges.length} diagnostic exchanges captured</p>
+        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-display-xs border-b border-b-border before:content-['//_'] before:text-accent">Session Diagnostic Report</h3>
+        <p className="text-text-mute text-sm mb-4">{exchanges.length} diagnostic exchanges captured</p>
 
         <div className="flex flex-col gap-6">
           {exchanges.map((ex, index) => (
-            <div key={index} className="bg-[#11161d] border border-border p-6 rounded-md flex flex-col gap-4">
+            <div key={index} className="bg-[#11161d] border border-l-4 border-border border-l-accent px-4 py-3 rounded-md flex flex-col gap-4">
               <h4 className="text-white font-bold">Q{index + 1}: {ex.question.text}</h4>
               <div className="text-text-mute whitespace-pre-wrap leading-relaxed">
                 {ex.answer ? formatText(ex.answer.text) : <span className="italic text-gray-500">Awaiting response...</span>}
@@ -74,16 +74,16 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
         </div>
       </div>
 
-      <div className="flex gap-4 mt-4">
-        <button className="bg-accent text-background font-mono font-bold uppercase tracking-widest px-8 py-3 rounded hover:bg-accent/90 transition-colors">
+      <div className="flex flex-wrap gap-4 mt-4">
+        <button className="bg-accent text-black text-[0.78em] font-mono font-bold uppercase tracking-widest px-4 py-2 rounded-md hover:bg-accent/90 transition-colors">
           Generate PDF
         </button>
-        <button className="bg-bg-elev border border-border text-text font-mono uppercase tracking-widest px-8 py-3 rounded hover:bg-bg-deep transition-colors">
+        <button className="bg-bg-elev text-[0.78em] border border-border text-text font-mono uppercase tracking-widest px-4 py-2 rounded-md hover:bg-bg-deep transition-colors">
           Export Session CSV
         </button>
         <button
           onClick={() => setMessages([])}
-          className="bg-red-500 text-white font-mono font-bold uppercase tracking-widest px-8 py-3 rounded hover:bg-red-600 transition-colors ml-auto"
+          className="bg-red-500 text-white text-[0.78em] font-mono font-bold uppercase tracking-widest px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
         >
           Clear Session
         </button>
