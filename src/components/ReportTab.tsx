@@ -180,10 +180,10 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
         <button
           onClick={handleGeneratePDF}
           disabled={!hasSessions}
-          className={`text-[0.78em] font-mono font-bold uppercase tracking-widest px-4 py-2 rounded-md transition-colors ${
+          className={`text-[0.78em] font-mono uppercase tracking-widest px-4 py-2 rounded-md transition-all ${
             hasSessions
-              ? "bg-accent text-black hover:bg-accent/90 cursor-pointer"
-              : "bg-accent/30 text-black/40 cursor-not-allowed border border-accent/20"
+              ? "bg-accent text-black font-bold hover:bg-accent/90 cursor-pointer"
+              : "bg-bg-elev border border-border/40 text-text-dim/50 cursor-not-allowed opacity-40"
           }`}
         >
           Generate PDF
@@ -191,10 +191,10 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
         <button
           onClick={handleExportCSV}
           disabled={!hasSessions}
-          className={`text-[0.78em] font-mono uppercase tracking-widest px-4 py-2 rounded-md border transition-colors ${
+          className={`text-[0.78em] font-mono uppercase tracking-widest px-4 py-2 rounded-md transition-all ${
             hasSessions
-              ? "bg-bg-elev border-border text-text hover:bg-bg-deep cursor-pointer"
-              : "bg-bg-elev/40 border-border/40 text-text-dim/40 cursor-not-allowed"
+              ? "bg-bg-elev border border-border text-text hover:bg-bg-deep cursor-pointer"
+              : "bg-bg-elev border border-border/40 text-text-dim/50 cursor-not-allowed opacity-40"
           }`}
         >
           Export Session CSV
@@ -202,10 +202,10 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
         <button
           onClick={() => setMessages([])}
           disabled={!hasSessions}
-          className={`text-[0.78em] font-mono font-bold uppercase tracking-widest px-4 py-2 rounded-md transition-colors ${
+          className={`text-[0.78em] font-mono uppercase tracking-widest px-4 py-2 rounded-md transition-all ${
             hasSessions
-              ? "bg-red-500 text-white hover:bg-red-600 cursor-pointer"
-              : "bg-red-500/30 text-white/40 cursor-not-allowed"
+              ? "bg-red-500 text-white font-bold hover:bg-red-600 cursor-pointer"
+              : "bg-bg-elev border border-border/40 text-text-dim/50 cursor-not-allowed opacity-40"
           }`}
         >
           Clear Session

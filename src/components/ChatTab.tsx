@@ -219,7 +219,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
           }
         </span>
       </div>
-      <div className="w-[880px] max-w-[880px] mx-auto flex-1 overflow-y-auto space-y-6 pb-6">
+      <div className="max-w-[880px] mx-auto flex-1 overflow-y-auto space-y-6 pb-6">
         {messages.map((msg) => (
           <div key={msg.id} className="flex gap-4 mx-6">
             <div className={`size-[38px] border rounded flex items-center justify-center font-mono text-[0.65em] font-semibold tracking-wider shrink-0 mt-[2px] ${msg.sender === "user" ? "border-border-soft text-text-mute bg-bg-elev" : "border-accent text-accent bg-bg-deep"
@@ -262,7 +262,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
                 }
               }}
               placeholder="Type your query here - e.g. Vibration analysis of screw compressor with anti friction bearings..."
-              className="flex-1 bg-transparent rounded-md border border-border-soft pl-2 pt-2 focus:outline-none text-text placeholder:text-text-dim resize-none text-tight-xs leading-relaxed"
+              className="flex-1 bg-transparent rounded-md border border-border pl-2 pt-2 focus:outline-none text-text placeholder:text-text-dim resize-none text-tight-xs leading-relaxed"
               rows={4}
             />
             <button
