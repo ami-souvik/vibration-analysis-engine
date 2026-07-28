@@ -5,12 +5,13 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const result = diagnoseCentrifugalFan({
-      fan_rpm: body.fan_rpm,
+      fan_rpm: body.fan_rpm || body.motor_rpm,
       vanes: body.vanes,
       foundation_type: body.foundation_type,
       machine_group: body.machine_group,
       measured_peaks: body.measured_peaks || {},
       overall_vibration_rms: body.overall_vibration_rms,
+      bearing_numbers: body.bearing_numbers,
     });
     return NextResponse.json(result);
   } catch (error) {

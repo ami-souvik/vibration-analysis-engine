@@ -12,15 +12,14 @@ interface FaultFrequency {
 }
 
 export default function SpectrumTab() {
-  const [bearingNumber, setBearingNumber] = useState("7309");
-  const [shaftSpeed, setShaftSpeed] = useState("3000");
-  const [maleLobes, setMaleLobes] = useState("4");
-  const [femaleLobes, setFemaleLobes] = useState("6");
+  const [bearingNumber, setBearingNumber] = useState("22216");
+  const [shaftSpeed, setShaftSpeed] = useState("2980");
+  const [vanes, setVanes] = useState("11");
   const [balls, setBalls] = useState("16");
-  const [ballDiameter, setBallDiameter] = useState("12.5");
-  const [pitchDiameter, setPitchDiameter] = useState("90");
-  const [contactAngle, setContactAngle] = useState("0");
-  const [peakFrequencies, setPeakFrequencies] = useState("49.7, 99.3, 228, 338");
+  const [ballDiameter, setBallDiameter] = useState("22.0");
+  const [pitchDiameter, setPitchDiameter] = useState("110");
+  const [contactAngle, setContactAngle] = useState("12");
+  const [peakFrequencies, setPeakFrequencies] = useState("49.67, 99.33, 35.0, 546.33, 350");
 
   const [status, setStatus] = useState<string>("");
   const [analysisResults, setAnalysisResults] = useState<FaultFrequency[]>([]);
@@ -77,8 +76,7 @@ export default function SpectrumTab() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           shaft_rpm: parseFloat(shaftSpeed),
-          male_lobes: parseInt(maleLobes) || 4,
-          female_lobes: parseInt(femaleLobes) || 6,
+          vanes: parseInt(vanes) || 11,
           balls: parseInt(balls),
           ball_diameter: parseFloat(ballDiameter),
           pitch_diameter: parseFloat(pitchDiameter),
@@ -126,13 +124,13 @@ export default function SpectrumTab() {
     <div className="flex-1 overflow-y-auto bg-bg-base p-4 md:p-7 flex flex-col gap-8 text-sm">
       {/* Measurement Guidance */}
       <div className="bg-bg-elev border border-border rounded-md py-4 px-5">
-        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-display-xs border-b border-b-border before:content-['//_'] before:text-accent">Measurement Guidance</h3>
+        <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-display-xs border-b border-b-border before:content-['//_'] before:text-accent">Measurement Guidance (ISO 20816-3)</h3>
         <ul className="space-y-1 text-text-mute flex flex-col">
           <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">FFT line resolution should be set to <strong className="text-text">800 lines</strong> to capture proper fault-frequency detail.</li>
-          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">For overall machine health, report <strong className="text-text">overall vibration in mm/sec RMS</strong> (VDI 3836 / ISO 10816-7).</li>
-          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">When reporting individual <strong className="text-text">peak frequencies</strong>, use <strong className="text-text">mm/sec or microns pk-pk</strong> - do not use RMS at the peak level.</li>
-          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2"><strong className="text-text">Rotor Mesh Frequency (RMF = Male Lobes × Speed)</strong> and <strong className="text-text">Female Rotor Speed</strong> are computed to identify pocket passing and meshing anomalies.</li>
-          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">Even when compressor & motor are joined by a <strong className="text-text">flexible coupling</strong>, analyse <strong className="text-text">both units</strong> - compressor-side faults can propagate to the motor and vice versa.</li>
+          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2">For overall machine health, report <strong className="text-text">overall vibration in mm/sec RMS</strong> (ISO 20816-3 for Group 1 / Group 2 machines).</li>
+          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2"><strong className="text-text">Blade Pass Frequency (BPF = Impeller Vanes × Speed)</strong> identifies inlet obstruction and blade meshing anomalies.</li>
+          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2"><strong className="text-text">Aerodynamic Stall Range (0.66x–0.75x 1x)</strong> and <strong className="text-text">Surge Range (0.33x–0.50x 1x)</strong> detect subsynchronous flow instabilities.</li>
+          <li className="text-[0.78rem] before:content-['›'] before:text-accent before:mr-2"><strong className="text-text">Spherical Roller Bearings (BPFO, BPFI, BSF, FTF)</strong> pinpoint race, roller spin, and cage defects in anti-friction bearings.</li>
         </ul>
       </div>
 
@@ -144,7 +142,7 @@ export default function SpectrumTab() {
         <div className="flex gap-4 items-end">
           <div className="flex flex-col flex-1 gap-2">
             <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">
-              Bearing Number (e.g. 7309, NU309, 6310, 3307)
+              Bearing Number (e.g. 22216, 22220, 22316, 6310, 7309)
             </label>
             <input
               value={bearingNumber}
@@ -165,11 +163,11 @@ export default function SpectrumTab() {
       {/* Bearing Geometry */}
       <div>
         <h3 className="text-text-mute font-mono tracking-widest uppercase pb-2 mb-4 text-display-xs border-b border-b-border before:content-['//_'] before:text-accent">
-          Rotor Geometry & Operating Speed
+          Fan Rotor Geometry & Operating Speed
         </h3>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Male Rotor Speed / Shaft Speed (RPM)</label>
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Fan Rotor Speed / Shaft Speed (RPM)</label>
             <input
               value={shaftSpeed}
               onChange={(e) => setShaftSpeed(e.target.value)}
@@ -177,18 +175,10 @@ export default function SpectrumTab() {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Male Rotor Lobes Count</label>
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Impeller Vanes Count</label>
             <input
-              value={maleLobes}
-              onChange={(e) => setMaleLobes(e.target.value)}
-              className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Female Rotor Lobes Count</label>
-            <input
-              value={femaleLobes}
-              onChange={(e) => setFemaleLobes(e.target.value)}
+              value={vanes}
+              onChange={(e) => setVanes(e.target.value)}
               className="bg-bg-elev border border-border rounded px-3 py-2 text-text w-full font-mono focus:outline-none focus:border-accent"
             />
           </div>
@@ -201,7 +191,7 @@ export default function SpectrumTab() {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Ball Diameter (mm)</label>
+            <label className="text-text-mute text-display-xs uppercase tracking-widest font-mono">Ball / Roller Diameter (mm)</label>
             <input
               value={ballDiameter}
               onChange={(e) => setBallDiameter(e.target.value)}

@@ -1,7 +1,10 @@
 export interface FaultFrequency {
   label: string;
   frequency_hz: number;
+  frequency_cpm?: number;
   description: string;
+  directional_trait?: string;
+  dominant_location?: string;
 }
 
 export interface MatchedPeak {
@@ -9,12 +12,14 @@ export interface MatchedPeak {
   calculated_frequency_hz: number;
   fault_condition: string;
   confidence: number; // percentage
+  directional_trait?: string;
 }
 
 export interface DiagnosticResult {
   machine_type: string;
   calculated_frequencies: FaultFrequency[];
   acceptance_verdict: string;
+  iso_zone?: string;
   acceptance_limit_rms: number | null;
   matched_faults: MatchedPeak[];
 }
@@ -30,8 +35,10 @@ export interface BearingGeometry {
 export interface FaultFrequencyResult {
   label: string;
   frequency_hz: number;
+  frequency_cpm?: number;
   ratio: string;
   description: string;
+  directional_trait?: string;
 }
 
 export interface ExtractedPeak {
@@ -40,7 +47,9 @@ export interface ExtractedPeak {
 }
 
 export interface ExtractedMachineParams {
+  fan_rpm?: number | null;
   motor_rpm?: number | null;
+  vanes?: number | null;
   male_lobes?: number | null;
   female_lobes?: number | null;
   foundation_type?: string | null;
@@ -51,3 +60,4 @@ export interface ExtractedMachineParams {
   missing_fields: string[];
   conversational_reply?: string | null;
 }
+

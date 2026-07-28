@@ -148,12 +148,12 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
         ]);
       } else if (data.status === "missing_fields") {
         const fieldLabels: Record<string, string> = {
+          fan_rpm: "Speed in RPM",
           motor_rpm: "Speed in RPM",
-          male_lobes: "Number of male lobes",
-          female_lobes: "Number of female lobes",
+          vanes: "Number of impeller vanes",
           foundation_type: "Foundation type (Rigid or Flexible)",
-          machine_group: "Machine group (e.g. Group 2 Oil-Free, Group 3 Oil-Flooded)",
-          bearing_numbers: "Bearing numbers (e.g. 7309 DE, NU 309 NDE)",
+          machine_group: "Machine classification (ISO 20816-3 Group 1 >300kW or Group 2 15-300kW)",
+          bearing_numbers: "Bearing designation/numbers (e.g. Spherical roller bearings, 22216)",
           measured_peaks: "At least one peak frequency in Hz",
           overall_vibration_rms: "Overall vibration (mm/sec RMS)"
         };
@@ -163,7 +163,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
         // Count user messages to determine if this is the first interaction
         const userMessageCount = messages.filter(m => m.sender === "user").length;
         const text = userMessageCount === 1
-          ? `Hello! I'm ready to help diagnose your machine.\n\nTo start, please provide the following information:\n${bullets}`
+          ? `Hello! I'm ready to help diagnose your centrifugal fan.\n\nTo start, please provide the following information:\n${bullets}`
           : `Thank you. I still need the following to proceed:\n${bullets}`;
 
         setMessages((prev) => [
@@ -215,7 +215,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
         <span className="text-green font-mono text-[0.78em] tracking-wider">
           {
             messages.length > 0 ? "Response received."
-              : "Diagnostic engine connected. Describe the vibration in screw compressor to begin."
+              : "Diagnostic engine connected. Describe the vibration in centrifugal fan to begin."
           }
         </span>
       </div>
@@ -261,7 +261,7 @@ export default function ChatTab({ messages, setMessages }: ChatTabProps) {
                   handleSend();
                 }
               }}
-              placeholder="Type your query here - e.g. Vibration analysis of screw compressor with anti friction bearings..."
+              placeholder="Type your query here - e.g. Vibration analysis of centrifugal fan with anti friction bearings, 2980 RPM, 11 vanes..."
               className="flex-1 bg-transparent rounded-md border border-border pl-2 pt-2 focus:outline-none text-text placeholder:text-text-dim resize-none text-tight-xs leading-relaxed"
               rows={4}
             />

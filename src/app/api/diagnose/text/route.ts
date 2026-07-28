@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { parseOperatorInput } from "@/lib/nlu/parser";
-import { diagnoseScrewCompressor } from "@/lib/engine/screwCompressor";
+import { diagnoseCentrifugalFan } from "@/lib/engine/centrifugalFan";
 import { generateDiagnosisNarration } from "@/lib/nlu/narrator";
 
 export async function POST(request: Request) {
@@ -25,12 +25,11 @@ export async function POST(request: Request) {
       }
     }
 
-    const result = diagnoseScrewCompressor({
-      motor_rpm: params.motor_rpm || 0,
-      male_lobes: params.male_lobes || 0,
-      female_lobes: params.female_lobes || 0,
+    const result = diagnoseCentrifugalFan({
+      fan_rpm: params.fan_rpm || params.motor_rpm || 0,
+      vanes: params.vanes || 0,
       foundation_type: params.foundation_type || "Rigid",
-      machine_group: params.machine_group || "Group 1",
+      machine_group: params.machine_group || "Group 2",
       measured_peaks: peaksDict,
       overall_vibration_rms: params.overall_vibration_rms,
       bearing_numbers: params.bearing_numbers,
@@ -45,3 +44,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

@@ -97,7 +97,7 @@ export default function ReportTab({ messages, setMessages }: ReportTabProps) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 116, 139);
-    doc.text("Session Diagnostic Report - Screw Compressor Analysis", margin, y);
+    doc.text("Session Diagnostic Report - Centrifugal Fan Analysis", margin, y);
     y += 5;
     doc.text(`Generated: ${new Date().toLocaleString()} | Total Exchanges: ${exchanges.length}`, margin, y);
     y += 8;
